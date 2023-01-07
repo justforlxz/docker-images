@@ -1,4 +1,4 @@
-FROM docker.io/nextcloud:25
+FROM docker.io/nextcloud:25-fpm
 
 RUN set -x \
     && apt-get update \
