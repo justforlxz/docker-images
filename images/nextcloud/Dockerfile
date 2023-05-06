@@ -1,4 +1,4 @@
-FROM docker.io/nextcloud:25
+FROM docker.io/nextcloud:26
 
 RUN set -x \
     && apt-get update \
