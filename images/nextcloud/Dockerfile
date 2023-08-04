@@ -1,4 +1,4 @@
-FROM docker.io/nextcloud:26
+FROM docker.io/nextcloud:27
 
 RUN set -x \
     && apt-get update \
@@ -23,5 +23,6 @@ RUN set -x \
     && apt-get install -y libmagickcore-6.q16-6-extra \
     # LibreOffice
     && apt-get install -y libreoffice \
+    && apt-get install -y sudo \
     # Clean apt cache
     && apt-get clean
