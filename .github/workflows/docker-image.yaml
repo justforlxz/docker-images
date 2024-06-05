@@ -41,7 +41,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: images/${{ matrix.image }}
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           tags: ghcr.io/justforlxz/images/${{ matrix.image }}:latest
           labels: org.opencontainers.image.title=docker-images
