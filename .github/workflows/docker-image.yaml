@@ -68,13 +68,14 @@ jobs:
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push by digest
+      - name: Build and push image
         id: build
         uses: docker/build-push-action@v6
         with:
           context: images/${{ matrix.image }}
           platforms: ${{ matrix.platform }}
           outputs: type=image,name=ghcr.io/${{ github.repository_owner }}/images/${{ matrix.image }},push-by-digest=true,name-canonical=true,push=true
+          push: true
 
       - name: Export digest
         shell: bash
@@ -87,7 +88,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: digests-${{ matrix.image }}-${{ env.PLATFORM_PAIR }}
-          path: ${{ runner.temp }}/digests/${{ matrix.image }}/*
+          path: ${{ runner.temp }}/digests/
           retention-days: 1
 
   merge:
@@ -114,12 +115,23 @@ jobs:
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Create manifest lists
+      - name: Create multi-arch manifest and push
         shell: bash
+        working-directory: ${{ runner.temp }}/digests
         run: |
-          for image in $(ls "${{ runner.temp }}/digests"); do
-            cd "${{ runner.temp }}/digests/$image"
+          set -euo pipefail
+
+          for image in */; do
+            image="${image%/}"
+            refs=()
+
+            for digest in "$image"/*; do
+              d="$(basename "$digest")"
+              refs+=("ghcr.io/justforlxz/images/${image}@sha256:${d}")
+            done
+
+            echo "Creating manifest for ${image}"
             docker buildx imagetools create \
-              -t ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAMESPACE }}/${image}:latest \
-              $(printf '${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAMESPACE }}/${image}@sha256:%s ' *)
+              -t ghcr.io/justforlxz/images/${image}:latest \
+              "${refs[@]}"
           done
