@@ -55,5 +55,5 @@ jobs:
           context: images/${{ matrix.image }}
           platforms: linux/amd64
           push: true
-          tags: ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER }}/images/${{ matrix.image }}:latest
+          tags: ghcr.io/${{ github.event.repository.name }}/images/${{ matrix.image }}:latest
           labels: org.opencontainers.image.title=docker-images
