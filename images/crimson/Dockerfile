@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim AS builder
+FROM --platform=$BUILDPLATFORM debian:bookworm-slim AS builder
 
 RUN apt-get update && apt-get install -y \
     debootstrap \
@@ -13,7 +13,6 @@ RUN apt-get update && apt-get install -y \
 RUN ln -s /usr/share/debootstrap/scripts/unstable /usr/share/debootstrap/scripts/beige && \
     mkdir -p /rootfs && \
     debootstrap \
-    --arch=amd64 \
     --variant=minbase \
     --include=ca-certificates,apt-transport-https,gnupg,wget \
     --no-check-gpg \
